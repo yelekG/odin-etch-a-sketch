@@ -12,8 +12,8 @@ body {
 #container {
     display: flex;
     flex-wrap: wrap;
-    width: 500px; /* Sabit genişlik */
-    height: 500px; /* Sabit yükseklik */
+    width: 960px; /* Sabit genişlik */
+    height: 960px; /* Sabit yükseklik */
     border: 2px solid black;
 }
 
@@ -21,6 +21,8 @@ body {
     background-color: white;
     border: 1px solid #ddd;
     box-sizing: border-box;
+    opacity: 1;
+    transition: opacity 0.3s; /* Yumuşak geçiş efekti */
 }
 
 h1 {
