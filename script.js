@@ -1,12 +1,12 @@
 const container = document.getElementById("container");
 const newGridButton = document.getElementById("new-grid");
 const colorModeOn = document.getElementById("open");
-const colorModeOff = document.getElementById("close")
+const colorModeOff = document.getElementById("close");
 
-let colorMode = false //Başlangıçta renk modu kapalı
+let colorMode = false; // Başlangıçta renk modu kapalı
 
 function createGrid(size) {
-    container.innerHTML = ""; //Her yeni grid oluşturduğumuzda eski kareleri temizler.
+    container.innerHTML = ""; // Eski kareleri temizle
     
     const squareSize = Math.floor(600 / size);
 
@@ -17,35 +17,33 @@ function createGrid(size) {
         square.style.width = `${squareSize}px`;
         square.style.height = `${squareSize}px`;
 
-        resetSquare(square) //Karelerin başlangıç rengi beyaz olur
- 
-        //Eğer kareye ilk defa dokunuluyorsa rastgele renk ata
-        if (!square.dataset.colorSet) {
-            square.dataset.red = randomRGB();
-            square.dataset.green = randomRGB();
-            square.dataset.blue = randomRGB();
-            square.dataset.colorSet = "true"; // Renk bir kez atandı
-        }
-
-        if (square.dataset.colorSet) {
-            
-        }
+        resetSquare(square); // Başlangıç rengi beyaz yap
 
         square.dataset.opacity = "0"; // Opacity sıfırdan başlar
 
         square.addEventListener("mouseover", () => {
-            let opacity = parseFloat(square.dataset.opacity);             
-                
+            let opacity = parseFloat(square.dataset.opacity);
+
+            if (opacity === 0) {
+                // Eğer kareye ilk kez dokunuluyorsa, renk atanır (sadece bir kere)
+                if (!square.dataset.colorSet) {
+                    square.dataset.red = randomRGB();
+                    square.dataset.green = randomRGB();
+                    square.dataset.blue = randomRGB();
+                    square.dataset.colorSet = "true"; // Artık renk değişmeyecek
+                }
+            }
+
             if (colorMode) {             
                 if (opacity < 1) {
                     opacity += 0.1;
                     square.dataset.opacity = opacity.toString();
-                    square.style.backgroundColor = `rgba(${randomRGB()}, ${randomRGB()}, ${randomRGB()}, ${opacity})`;
+                    // İlk belirlenen renk ile opacity artırılıyor, renk değişmiyor
+                    square.style.backgroundColor = `rgba(${square.dataset.red}, ${square.dataset.green}, ${square.dataset.blue}, ${opacity})`;
                 }
             } else {
-                //Renk modu kapalıyken sadece siyah
-                square.style.backgroundColor = "black"
-                square.dataset.opacity = "1";
+                // Renk modu kapalıysa tam siyah yap
+                square.style.backgroundColor = `rgba(0, 0, 0, 1)`;
             }
         });
 
@@ -56,14 +54,12 @@ function createGrid(size) {
 function resetSquare(square) {
     square.style.backgroundColor = "rgba(255, 255, 255, 1)";
     square.dataset.opacity = "0";
-    square.dataset.colorSet = "false";
-    delete square.dataset.colorSet; //Atanmış rengi sıfırla
+    delete square.dataset.colorSet; // Rengi sıfırla
 }
 
 function randomRGB() {
     return Math.floor(Math.random() * 256);
 }
-
 
 newGridButton.addEventListener("click", () => {
     let gridSize = prompt("Yeni grid boyutunu girin (max:100): ");
@@ -73,7 +69,7 @@ newGridButton.addEventListener("click", () => {
         return;
     }
 
-    gridSize = parseInt(gridSize); //String olan girdiyi sayıya çevirir
+    gridSize = parseInt(gridSize); // String olan girdiyi sayıya çevirir
 
     if (gridSize < 1 || gridSize > 100) {
         alert("Lütfen 1 ile 100 arasında bir sayı girin.");
@@ -91,9 +87,21 @@ colorModeOn.addEventListener("click", () => {
 colorModeOff.addEventListener("click", () => {
     colorMode = false;
     resetAllSquares();
-})
+});
+
 
 function resetAllSquares() {
     const squares = document.querySelectorAll(".grid-square");
-    squares.forEach(resetSquare);
+    squares.forEach(square => {
+        resetSquare(square);
+    });
 }
+
+function resetSquare(square) {
+    square.style.backgroundColor = "rgba(255, 255, 255, 1)";
+    square.dataset.opacity = "0";
+    delete square.dataset.colorSet;
+}
+
+const resetButton = document.getElementById("reset");
+resetButton.addEventListener("click", resetAllSquares);
